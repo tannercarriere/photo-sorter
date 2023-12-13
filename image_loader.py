@@ -7,6 +7,8 @@ from PIL import Image
 
 WIN_X = 1000
 WIN_Y = 900
+END_OF_FOLDER   = -1
+CONTINUE_FOLDER = 0
 
 class ImageLoader(gui.CTk):
     _images: Iterator = None
@@ -59,14 +61,17 @@ class ImageLoader(gui.CTk):
         )
         self.image_frame.update_name(f'{file_name}')
 
-    def next_callback(self)->None:
-        self._cur_image = self._images.__next__()
+    def next_callback(self)->int:
+        status = CONTINUE_FOLDER
         try:
+            self._cur_image = self._images.__next__()
             while not IMAGE_PATTERN.findall(self._cur_image):
                 self._cur_image = self._images.__next__()
         except StopIteration:
-            self._cur_image = ''
+            self._images, self._cur_image = setup_directory(self._base_path)
+            status = END_OF_FOLDER
         self.image_frame.reload_gui()
+        return status
     
     def option_callback(self)->None:
         if self.settings_window is None or not self.settings_window.winfo_exists():
