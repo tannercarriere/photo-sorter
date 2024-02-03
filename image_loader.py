@@ -44,22 +44,27 @@ class ImageLoader(gui.CTk):
 
         self.settings_window = None
     
-    def setCurrentDirectory(self, dir_iter, cur_image):
+    def set_current_directory(self, dir_iter, cur_image):
         if cur_image:
             self._base_path = os.path.dirname(cur_image)
         self._images = dir_iter
         self._cur_image = cur_image
 
     def save_callback(self, key):
+        ''' Save callback. Called when pressing save hotkey
+        
+        Arguments:
+        key: the key combination pressed to trigger this event
+        '''
         if not key.state:
             return
         file_name = save_image(
             self.info_frame.name.get(),
             self.info_frame.source.get(),
             self._base_path,
-            save_path=self._save_path
+            cur_image=f'{self._cur_image}'
         )
-        self.image_frame.update_name(f'{file_name}')
+        self.image_frame.update_name(f'{file_name}{self._cur_image}')
 
     def next_callback(self)->int:
         status = CONTINUE_FOLDER
@@ -166,8 +171,7 @@ class SettingsWindow(gui.CTkToplevel):
     def save_callback(self):
         new_dir = self.source_dir.get()
         img_itr, cur_img = setup_directory(new_dir)
-        self.main._images = img_itr
-        self.main._cur_image = cur_img
+        self.main.set_current_directory(img_itr, cur_img)
         self.main.image_frame.reload_gui()
     
     def cancel_callback(self):

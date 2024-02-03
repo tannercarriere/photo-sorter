@@ -18,6 +18,12 @@ class TestHelperFunctionClass:
         # Undo rename to allow for back to back tests
         os.rename(f'{path}\\{self.rename}-{self.source}-{self.orig_name}', f'{path}\\{self.orig_name}')
 
+    def test_save_file_no_image(self):
+        path: str = PATH_RENAME
+        ret: int = save_image(self.rename, self.source, path, cur_image='')
+
+        assert ret == ''
+
     def test_save_file_new_dir(self):
         orig_path: str = PATH_RENAME
         new_path:  str = 'test\\data\\new_path\\'
